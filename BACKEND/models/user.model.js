@@ -7,14 +7,14 @@ const bcrypt = require('bcrypt');
 const userSchema = new Schema ({
     email: {
         type: String,
-        required: true,
-        unique: true,
+        required: [true, 'Please enter an email.'],
+        unique: [true, 'Email is already taken.'],
         lowercase: true,
-        validate: [isEmail]
+        validate: [isEmail, 'Please enter a valid email.']
     },
     username: {
         type: String,
-        unique: true,
+        unique: [true, 'Username is already taken.'],
         lowercase: true
     },
     name: {
@@ -23,8 +23,8 @@ const userSchema = new Schema ({
     },
     password: {
         type: String,
-        required: true,
-        minlength: 8
+        required: [true, 'Please enter a password.'],
+        minlength: [8, 'Minimum password length is 8 characters.']
     },
     friends: [mongoose.SchemaType.ObjectId],
     profile: {
@@ -33,6 +33,9 @@ const userSchema = new Schema ({
         },
         birthdate: {
             type: Date
+        },
+        gender: {
+            type: String
         }
     }
 });
