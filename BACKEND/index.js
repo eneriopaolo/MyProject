@@ -3,8 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const swaggerUI = require('swagger-ui-express');
-const swaggerDoc = require('./docs/api.documentation.json');
-require('dotenv').config();
+const swaggerDoc = require('./docs/api.doc.json');
 
 // Middlewares:
 const app = express();
@@ -23,12 +22,14 @@ mongoose.connect(dbURI)
     });
 
 // ROUTERS:
-
+const userAuthRoutes = require('./routes/userauth.route');
 
 // ROUTES:
 app.get('/api', (req, res) => {
     res.status(200).send("Server is running.")
 });
+
+app.use('/api/auth', userAuthRoutes);
 
 // Swagger UI Docs Route:
 app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc))

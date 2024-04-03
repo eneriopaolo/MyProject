@@ -26,7 +26,6 @@ const userSchema = new Schema ({
         required: [true, 'Please enter a password.'],
         minlength: [8, 'Minimum password length is 8 characters.']
     },
-    friends: [mongoose.SchemaType.ObjectId],
     profile: {
         bio: {
             type: String
@@ -48,10 +47,12 @@ userSchema.pre('save', async function (next) {
 
 // Validation of User Credentials for Login:
 userSchema.statics.login = async function(username, password) {
+    let user = {};
     if (isEmail(username)) {
-        const user = await this.findOne({email});
+        const email = username;
+        user = await this.findOne({email});
     } else {
-        const user = await this.findOne({username});
+        user = await this.findOne({username});
     };
     if (user) {
         const auth = await bcrypt.compare(password, user.password)

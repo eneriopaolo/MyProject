@@ -1,0 +1,105 @@
+openapi: 3.0.3
+info:
+  title: MessagingWebsite
+  description: This is the documentation for the REST API endpoints of my messaging website
+  version: 0.0.1
+servers:
+  - url: http://localhost:3000/
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterReq:
+      type: object
+      properties:
+        email:
+          type: string
+          example: paoloenerio@gmail.com
+        name:
+          type: string
+          example: Paolo Enerio
+        password:
+          type: string
+          example: mypassword
+    RegisterRes201:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Successfully Registered.
+    LoginReq:
+      type: object
+      properties:
+        username:
+          type: string
+          example: paoloenerio@gmail.com
+        password:
+          type: string
+          example: mypassword
+    LoginRes201:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NjBkMzhlY2Q0ZWRhOGQyMDRiY2RlZGMiLCJpYXQiOjE3MTIxNDI5MDksImV4cCI6MTcxMjQwMjEwOX0.iIFvj3lrWbUuWFqSkfMALIziKRgcXoqSLiyd6IFynQs
+tags:
+  - name: Test
+    description: Test Endpoint
+  - name: Authentication
+    description: Authentication Endpoints
+  - name: Profile
+    description: Profile Endpoints
+paths:
+  /api:
+    get:
+      tags:
+        - Test
+      summary: Test Endpoint
+      description: This is used to test if the API is up and running.
+      responses:
+        '200':
+          description: The API is up and running.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Server is running.
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Registration Endpoint
+      description: This is used to register a user to the website. The email should be unique and the password must be 8 or more characters.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterReq'
+      responses:
+        '201':
+          description: Successful Registration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterRes201'
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login Endpoint
+      description: This is used to login a user to the website. An email or a username (if defined) can be used in the username field to login. This endpoint will send a JWT as a response in JSON if the user credentials in the request body is valid.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginReq'
+      responses:
+        '201':
+          description: Successful Login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginRes201'
