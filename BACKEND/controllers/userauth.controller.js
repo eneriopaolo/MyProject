@@ -12,8 +12,17 @@ const registerUser = async(req, res) => {
         });
         res.status(201).json({message: "Sucessfully Registered"});
     } catch (error) {
-        console.error(error);
-        res.status(400);
+        let errMessages = { email: '', name: '', password: ''}
+        if (error.code && error.code === 11000) {
+            errMessages.email = "Email is already taken."
+            return res.status(400).json({message: errMessages});
+        };
+        if (error.name === "ValidationError") {
+            Object.values(error.errors).forEach(({properties}) => {
+                errMessages[properties.path] = properties.message;
+            });
+            return res.status(400).json({message: errMessages})
+        } res.status(500).json({message: "Something went wrong."});
     };
 };
 
@@ -25,8 +34,7 @@ const loginUser = async(req, res) => {
         const token = createToken(user._id);
         res.status(201).json({token: token});
     } catch (error) {
-        console.error(error);
-        res.status(401);
+        res.status(401).json({message: error.message});
     };
 };
 
@@ -37,11 +45,6 @@ const createToken = (uid) => {
         expiresIn: tokenValidityDuration
     });
 };
-
-// Handle Registration Errors:
-const registrationErrorHandler = (err) => {
-    console.log(err.message);
-}
 
 module.exports = {
     registerUser,

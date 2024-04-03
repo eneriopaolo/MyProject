@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const swaggerUI = require('swagger-ui-express');
-const swaggerDoc = require('./docs/api.doc.json');
+const swaggerDoc = require('./docs/api.documentation.json');
 
 // Middlewares:
 const app = express();
@@ -15,7 +15,7 @@ const port = process.env.PORT;
 const dbURI = process.env.DB_URI;
 mongoose.connect(dbURI)
     .then((res) => app.listen(port, () => {
-        console.log(`Successfully Connected to DB. Server is listening to port ${port}`);
+        console.log(`Successfully Connected to DB. Server is listening on port ${port}`);
     }))
     .catch((err) => {
         console.log("Failed to establish connection to the DB.");
