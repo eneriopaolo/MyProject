@@ -59,8 +59,8 @@ userSchema.pre('save', async function (next) {
 // Validation of User Credentials for Login:
 userSchema.statics.login = async function(username, password) {
     let user = {};
-    if (!username) {throw Error('Please enter an email or username.')}
-    if (!password) {throw Error('Please enter a password.')}
+    if (!username) {throw Error('Please enter your email or username.')}
+    if (!password) {throw Error('Please enter your password.')}
     if (isEmail(username)) {
         const email = username;
         user = await this.findOne({email});

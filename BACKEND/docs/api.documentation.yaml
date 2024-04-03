@@ -30,6 +30,21 @@ components:
         message:
           type: string
           example: Successfully Registered.
+    RegisterRes400:
+      type: object
+      properties:
+        message:
+          type: object
+          properties:
+            email:
+              type: string
+              example: Please enter an email.
+            name:
+              type: string
+              example: Please enter a valid name.
+            password:
+              type: string
+              example: Minimum password length is 8 characters.
     LoginReq:
       type: object
       properties:
@@ -45,6 +60,18 @@ components:
         token:
           type: string
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2NjBkMzhlY2Q0ZWRhOGQyMDRiY2RlZGMiLCJpYXQiOjE3MTIxNDI5MDksImV4cCI6MTcxMjQwMjEwOX0.iIFvj3lrWbUuWFqSkfMALIziKRgcXoqSLiyd6IFynQs
+    LoginRes401:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Incorrect Email or Username.
+    GenericErrRes:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Something went wrong.
 tags:
   - name: Test
     description: Test Endpoint
@@ -72,7 +99,7 @@ paths:
       tags:
         - Authentication
       summary: Registration Endpoint
-      description: This is used to register a user to the website. The email should be unique and the password must be 8 or more characters.
+      description: 'This is used to register a user to the website. Request Body Requirements: email should be unique and not exceed 320 characters, name should only include letters, periods, and hyphens, password should be atleast 8 characters. Returns a nested object with error messages if there is an error in the request body.'
       requestBody:
         content:
           application/json:
@@ -85,12 +112,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RegisterRes201'
+        '400':
+          description: Error for invalid user inputs.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterRes400'
+        '500':
+          description: Generic Error. Could be caused by network issue or server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrRes'
   /api/auth/login:
     post:
       tags:
         - Authentication
       summary: Login Endpoint
-      description: This is used to login a user to the website. An email or a username (if defined) can be used in the username field to login. This endpoint will send a JWT as a response in JSON if the user credentials in the request body is valid.
+      description: This is used to login a user to the website. An email or a username (if defined) can be used in the username field to login. This endpoint will send a JWT as a response in JSON if the user credentials in the request body is valid. Returns a message in JSON format if there is an error in user credentials inputted.
       requestBody:
         content:
           application/json:
@@ -103,3 +142,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginRes201'
+        '401':
+          description: Error for invalid user credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginRes401'
