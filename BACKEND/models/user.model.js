@@ -47,7 +47,11 @@ const userSchema = new Schema ({
         gender: {
             type: String
         }
-    }
+    },
+    friends: [{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User'
+    }]
 });
 
 // Hashing of Password Prior to Creation in DB:
