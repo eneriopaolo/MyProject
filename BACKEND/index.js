@@ -23,6 +23,7 @@ mongoose.connect(dbURI)
 
 // ROUTERS:
 const userAuthRoutes = require('./routes/userauth.route');
+const friendRequestRoutes = require('./routes/request.route');
 
 // ROUTES:
 app.get('/api', (req, res) => {
@@ -30,6 +31,7 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/auth', userAuthRoutes);
+app.use('/api/friend', friendRequestRoutes);
 
 // Swagger UI Docs Route:
 app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc))

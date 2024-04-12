@@ -11,10 +11,10 @@ const authenticateToken = (req, res, next) => {
 
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_KEY);
-        userID = decodedToken.uid;
+        currentUID = decodedToken.uid;
         next();
     } catch (error) {
-        return res.status(403).json({msg: "Unauthorized Access: Token value is invalid."})
+        return res.status(403).json({message: "Unauthorized Access: Token value is invalid."})
     };
 };
 
