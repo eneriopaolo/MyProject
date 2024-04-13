@@ -38,6 +38,14 @@ const sendFriendRequest = async(req, res) => {
         if(!user) {
             return res.status(404).json({message: "User does not exist."});
         };
+        const reqBySender = await Request.findOne({sentBy: currentUID, receivedBy: userid});
+        if (reqBySender) { 
+            return res.status(400).json({message: "You have already sent a request to this user."});
+        };
+        const reqByReceiver = await Request.findOne({sentBy: userid, receivedBy: currentUID});
+        if (reqByReceiver) { 
+            return res.status(400).json({message: "This user has already sent you a friend request."});
+        };
 
         // Database CRUD Operation:
         const friendRequest = Request.create({
@@ -47,7 +55,7 @@ const sendFriendRequest = async(req, res) => {
 
         res.status(201).json({message: "Successfully sent friend request."})
     } catch (error) {
-        res.status(400).json({message: error.message});
+        res.status(500).json({message: "Something went wrong."});
     };
 };
 

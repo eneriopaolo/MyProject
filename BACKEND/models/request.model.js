@@ -33,15 +33,6 @@ const requestSchema = new Schema ({
     }
 });
 
-// Pre Hook for checking if there is an existing friend request between the two user.
-requestSchema.pre('save', async function (next) {
-    const reqBySender = await Request.findOne({sentBy: this.sentBy, receivedBy: this.receivedBy});
-    if (reqBySender) { throw Error('You have already sent a request to this user.')};
-    const reqByReceiver = await Request.findOne({sentBy: this.receivedBy, receivedBy: this.sentBy});
-    if (reqByReceiver) { throw Error('This user has already sent you a friend request.')};
-    next();
-});
-
 // Append UID to both users' friends field when friend request is accepted.
 requestSchema.post('updateOne', async function (next) {
     if (requestStatus === 'Accepted') {
