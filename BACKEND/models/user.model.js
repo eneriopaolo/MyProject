@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const userSchema = new Schema ({
     email: {
         type: String,
+        trim: true,
         required: [true, 'Please enter an email.'],
         unique: [true, 'Email is already taken.'],
         lowercase: true,
@@ -15,7 +16,7 @@ const userSchema = new Schema ({
     },
     username: {
         type: String,
-        unique: [true, 'Username is already taken.'],
+        trim: true,
         lowercase: true,
         validate: {
             validator: function(username) { return /^[a-zA-Z]+$/.test(username) },
@@ -53,6 +54,14 @@ const userSchema = new Schema ({
         ref: 'User'
     }]
 });
+
+// Enforce uniqueness of username while allowing nulls:
+userSchema.index({ username: 1}, {
+    unique: [true, 'Username is already taken.'],
+    partialFilterExpression: {
+        'username': {$exists: true, $gt: ''}   
+    }
+})
 
 // Hashing of Password Prior to Creation in DB:
 userSchema.pre('save', async function (next) {

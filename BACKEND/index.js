@@ -19,6 +19,7 @@ mongoose.connect(dbURI)
     }))
     .catch((err) => {
         console.log("Failed to establish connection to the DB.");
+        console.error(err); // For Debugging Purposes
     });
 
 // ROUTERS:

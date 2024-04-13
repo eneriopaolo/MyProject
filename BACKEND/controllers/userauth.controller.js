@@ -12,6 +12,7 @@ const registerUser = async(req, res) => {
         });
         res.status(201).json({message: "Sucessfully Registered"});
     } catch (error) {
+        console.log(error)
         let errMessages = { email: '', name: '', password: ''}
         if (error.code && error.code === 11000) {
             errMessages.email = "Email is already taken."
