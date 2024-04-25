@@ -31,11 +31,14 @@ const sendFriendRequest = async(req, res) => {
     const { userid } = req.params;
     try {
         // Validation:
-        if(!mongoose.Types.ObjectId.isValid(userid)) {
+        if (!mongoose.Types.ObjectId.isValid(userid)) {
             return res.status(404).json({message: "User does not exist."});
         };
+        if (userid === currentUID) {
+            return res.status(400).json({message: "Cannot send friend request to yourself."});
+        };
         const user = await User.findById(userid);
-        if(!user) {
+        if (!user) {
             return res.status(404).json({message: "User does not exist."});
         };
         const reqBySender = await Request.findOne({sentBy: currentUID, receivedBy: userid});
@@ -46,6 +49,10 @@ const sendFriendRequest = async(req, res) => {
         if (reqByReceiver) { 
             return res.status(400).json({message: "This user has already sent you a friend request."});
         };
+        const currUser = await User.findById(currentUID);
+        if (currUser.friends.include(user._id.toString())) {
+            return res.status(400).json({message: "You are already friends with this user."})
+        };
 
         // Database CRUD Operation:
         const friendRequest = Request.create({
@@ -53,7 +60,7 @@ const sendFriendRequest = async(req, res) => {
             receivedBy: userid
         });
 
-        res.status(201).json({message: "Successfully sent friend request."})
+        res.status(201).json({message: `Successfully sent friend request to ${User.name}.`})
     } catch (error) {
         res.status(500).json({message: "Something went wrong."});
     };
@@ -62,22 +69,25 @@ const sendFriendRequest = async(req, res) => {
 // Respond to a Friend Request Function:
 const respondFriendRequest = async(req, res) => {
     const { reqid } = req.params;
-    const { response } = req.body;
+    const { action } = req.query;
     try {
         // Validation:
-        if(!mongoose.Types.ObjectId.isValid(reqid)) {
+        if (!mongoose.Types.ObjectId.isValid(reqid)) {
             return res.status(404).json({message: "Request does not exist."});
         };
-        const friendRequest = Request.findById(reqid);
-        if(!friendRequest) {
+        const friendRequest = await Request.findById(reqid);
+        if (!friendRequest) {
             return res.status(404).json({message: "Request does not exist."});
         };
-        if(friendRequest.receivedBy !== currentUID) {
+        if (friendRequest.receivedBy.toString() !== currentUID) {
             return res.status(403).json({message: "Unauthorized Access: Cannot respond to requests not sent to you."});
         };
-
+        
+        let response = '';
+        if (action === 'accept') {response = 'Accepted'};
+        if (action === 'deny') {response = 'Denied'};
         // Database CRUD Operation:
-        const friendRequestResponse = Request.findByIdAndUpdate(reqid, {
+        const friendRequestResponse = await Request.findByIdAndUpdate(reqid, {
             requestStatus: response
         });
 
@@ -92,13 +102,16 @@ const cancelFriendRequest = async(req, res) => {
     const { reqid } = req.params;
     try {
         // Validation:
-        if(!mongoose.Types.ObjectId.isValid(reqid)) {
+        if (!mongoose.Types.ObjectId.isValid(reqid)) {
             return res.status(404).json({message: "Request does not exist."});
         };
         const friendRequest = Request.findById(reqid);
-        if(!friendRequest) {
+        if (!friendRequest) {
             return res.status(404).json({message: "Request does not exist."});
         };
+        if (friendRequest.sentBy !== currentUID) {
+            return res.status(403).json({message: "Unauthorized Access: Cannot cancel request of other users."})
+        }
 
         // Database CRUD Operation:
         const deleteRequest = Request.findByIdAndDelete(reqid);

@@ -5,7 +5,7 @@ const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
-    if(!token) {
+    if (!token) {
         res.status(401).json({message: "Unauthorized Access: Please login to continue."})
     }
 

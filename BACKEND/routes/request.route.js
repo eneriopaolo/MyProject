@@ -9,10 +9,10 @@ const {
 } = require('../controllers/request.controller');
 const {authenticateToken} = require('../services/authtoken.service');
 
-router.get('/requests-received', authenticateToken, viewFriendRequestsReceived);
-router.get('/requests-sent', authenticateToken, viewFriendRequestsSent);
+router.get('/', authenticateToken, viewFriendRequestsReceived);
+router.get('/sent', authenticateToken, viewFriendRequestsSent);
 router.post('/:userid', authenticateToken, sendFriendRequest);
-router.patch('/request/:reqid', authenticateToken, respondFriendRequest);
-router.delete('/request/:reqid', authenticateToken, cancelFriendRequest);
+router.patch('/:reqid', authenticateToken, respondFriendRequest);
+router.delete('/:reqid', authenticateToken, cancelFriendRequest);
 
 module.exports = router;

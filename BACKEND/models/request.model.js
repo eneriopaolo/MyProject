@@ -34,7 +34,8 @@ const requestSchema = new Schema ({
 });
 
 // Append UID to both users' friends field when friend request is accepted.
-requestSchema.post('updateOne', async function (next) {
+requestSchema.post('findByIdAndUpdate', async function (next) {
+    console.log("test")
     if (requestStatus === 'Accepted') {
         const sender = await User.findOneAndUpdate(this.sentBy, {
             $push: {"friends": this.receivedBy}

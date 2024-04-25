@@ -32,7 +32,10 @@ app.get('/api', (req, res) => {
 });
 
 app.use('/api/auth', userAuthRoutes);
-app.use('/api/friend', friendRequestRoutes);
+app.use('/api/user/friend-request', friendRequestRoutes);
+//app.use('/api/user/profile');
+//app.use('/api/user/friends');
+//app.use('/api/messages');
 
 // Swagger UI Docs Route:
 app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc))
