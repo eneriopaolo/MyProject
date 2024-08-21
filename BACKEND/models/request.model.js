@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const User = require('./user.model');
 
 // Friend Request Model:
 const requestSchema = new Schema ({
@@ -31,20 +30,6 @@ const requestSchema = new Schema ({
         default: 'Pending',
         required: true
     }
-});
-
-// Append UID to both users' friends field when friend request is accepted.
-requestSchema.post('findByIdAndUpdate', async function (next) {
-    console.log("test")
-    if (requestStatus === 'Accepted') {
-        const sender = await User.findOneAndUpdate(this.sentBy, {
-            $push: {"friends": this.receivedBy}
-        });
-        const receiver = await User.findOneAndUpdate(this.receivedBy, {
-            $push: {"friends": this.sentBy}
-        });
-    }
-    next();
 });
 
 const Request = mongoose.model('Request', requestSchema);

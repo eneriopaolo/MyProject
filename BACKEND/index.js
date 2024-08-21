@@ -38,4 +38,4 @@ app.use('/api/user/friend-request', friendRequestRoutes);
 //app.use('/api/messages');
 
 // Swagger UI Docs Route:
-app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc))
+app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));

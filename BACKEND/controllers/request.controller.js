@@ -49,18 +49,18 @@ const sendFriendRequest = async(req, res) => {
         if (reqByReceiver) { 
             return res.status(400).json({message: "This user has already sent you a friend request."});
         };
-        const currUser = await User.findById(currentUID);
-        if (currUser.friends.include(user._id.toString())) {
-            return res.status(400).json({message: "You are already friends with this user."})
-        };
-
+        //const currUser = await User.findById(currentUID);
+        //if (currUser.friends.map(friends=>friends.toString()).include(user._id.toString())) {
+        //    return res.status(400).json({message: "You are already friends with this user."})
+        //};
+        
         // Database CRUD Operation:
         const friendRequest = Request.create({
             sentBy: currentUID,
             receivedBy: userid
         });
 
-        res.status(201).json({message: `Successfully sent friend request to ${User.name}.`})
+        res.status(201).json({message: `Successfully sent friend request to ${user.name}.`})
     } catch (error) {
         res.status(500).json({message: "Something went wrong."});
     };
@@ -83,13 +83,20 @@ const respondFriendRequest = async(req, res) => {
             return res.status(403).json({message: "Unauthorized Access: Cannot respond to requests not sent to you."});
         };
         
-        let response = '';
-        if (action === 'accept') {response = 'Accepted'};
-        if (action === 'deny') {response = 'Denied'};
         // Database CRUD Operation:
+        let response = '';
+        action === 'accept' ? response = 'Accepted' : response = 'Denied';
         const friendRequestResponse = await Request.findByIdAndUpdate(reqid, {
             requestStatus: response
         });
+        if (action === 'accept') {
+            const sender = await User.findOneAndUpdate(friendRequest.sentBy, {
+                $push: {"friends": friendRequest.receivedBy}
+            });
+            const receiver = await User.findOneAndUpdate(friendRequest.receivedBy, {
+                $push: {"friends": friendRequest.sentBy}
+            });
+        }
 
         res.status(201).json({message: `Successfully ${response} the friend request.`});
     } catch (error) {
